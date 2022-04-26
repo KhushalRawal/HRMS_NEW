@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.decorators import api_view
-from employee.serializers import EmployeeSerializer, GetLeavesSerializer, HolidaySerializer, PostLeavesSerializer, GetDetailsLeaveSerializer
-from employee.models import Holidays, Employee, Leaves
+from employee.serializers import EmployeeSerializer, GetLeavesSerializer, HolidaySerializer, PostLeavesSerializer, LeaveManagementSerializer
+from employee.models import Holidays, Employee, Leaves,Leave_Managment
 from datetime import date, datetime, timedelta
 
 import json
@@ -142,3 +142,12 @@ def holidays(request):
             serializer.save()
             return Response(serializer.data, status= status.HTTP_201_CREATED)
         return Response(serializer.data, status= status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def leave_management(request):
+    
+    if request.method == 'GET':
+        manage_leave = Leave_Managment.objects.all()
+        serializer = LeaveManagementSerializer(manage_leave , many =True)
+        return Response(serializer.data)
+        

@@ -1,7 +1,8 @@
 from contextlib import nullcontext
+from pyexpat import model
 from django.forms import fields
 from rest_framework import serializers
-from employee.models import Holidays, Employee, CHOOSE_DESIGNATION, Leaves
+from employee.models import Holidays, Employee, CHOOSE_DESIGNATION, Leaves, Leave_Managment
 from datetime import date, datetime, timedelta 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -26,14 +27,14 @@ class GetLeavesSerializer(serializers.ModelSerializer):
     def get_first_name(self, obj):
         return obj.employee.first_name
 
-class GetDetailsLeaveSerializer(serializers.ModelSerializer):
-    Employee = EmployeeSerializer()
-    class Meta:
-        model = Leaves
-        fields = ['id','start_date','end_date','reason','employee', 'approved']
-        # fields = '__all__' # get all fields
-        # exclude = ['Employee'] # remove key from result
-        depth = 1 # get inner data from foreign key field
+# class GetDetailsLeaveSerializer(serializers.ModelSerializer):
+#     Employee = EmployeeSerializer()
+#     class Meta:
+#         model = Leaves
+#         fields = ['id','start_date','end_date','reason','employee', 'approved']
+#         # fields = '__all__' # get all fields
+#         # exclude = ['Employee'] # remove key from result
+#         depth = 1 # get inner data from foreign key field
 
 class PostLeavesSerializer(serializers.ModelSerializer):
     
@@ -60,9 +61,13 @@ class PostLeavesSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("finish must occur after start")
         return data
 
-
-
 class HolidaySerializer(serializers.ModelSerializer):
     class Meta:
         model = Holidays
         fields = ['id','title','description','date']
+
+class LeaveManagementSerializer(serializers.ModelSerializer):
+    employee = EmployeeSerializer()
+    class Meta: 
+        model = Leave_Managment
+        fields = ['total_leaves','employee']

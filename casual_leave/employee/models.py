@@ -1,6 +1,8 @@
 from datetime import date
+from email.policy import default
 from multiprocessing.sharedctypes import Value
 from optparse import Values
+from tkinter import CASCADE
 from django.db import models
 
 CHOOSE_DESIGNATION = [('Intern', 'Intern'),('Junior Developer','Junior Developer'),('Senior Developer','Senior Developer')]
@@ -28,3 +30,8 @@ class Holidays(models.Model):
     title = models.CharField(max_length=200,default='')
     description = models.TextField(max_length=250, default='')
     date = models.DateField(auto_now=False, auto_now_add=False, blank=True)
+
+class Leave_Managment(models.Model):
+    total_leaves = models.IntegerField()
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+
