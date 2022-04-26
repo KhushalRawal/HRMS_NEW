@@ -2,7 +2,7 @@ from contextlib import nullcontext
 from pyexpat import model
 from django.forms import fields
 from rest_framework import serializers
-from employee.models import Holidays, Employee, CHOOSE_DESIGNATION, Leaves, Leave_Managment
+from employee.models import Holidays, Employee, CHOOSE_DESIGNATION, Leaves, Leave_Management
 from datetime import date, datetime, timedelta 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -15,7 +15,8 @@ class GetLeavesSerializer(serializers.ModelSerializer):
     first_name = serializers.SerializerMethodField()
     class Meta:
         model = Leaves
-        fields = ['id', 'first_name', 'last_name', 'start_date', 'end_date', 'reason','approved', 'leave_days_count', 'employee']
+        fields = ['id', 'first_name', 'last_name', 'start_date', 'end_date', 'reason','approved', 'leave_days_count','total_leaves', 'employee']
+        read_only_fields = ['total_leaves']
         # fields = '__all__' # get all fields
         # exclude = ['Employee'] # remove key from result
         depth = 1 # get inner data from foreign key field
@@ -37,11 +38,10 @@ class GetLeavesSerializer(serializers.ModelSerializer):
 #         depth = 1 # get inner data from foreign key field
 
 class PostLeavesSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = Leaves
-        fields = ['id','start_date','end_date','Reason', 'employee','leave_days_count', 'approved'] 
-        read_only_fields = ['leave_days_count']
+        fields = ['id','start_date','end_date','reason', 'employee','leave_days_count','total_leaves', 'approved'] 
+        read_only_fields = ['leave_days_count','total_leaves']
     def validate(self, data):
         def isValid(start_date, end_date):
             delta = end_date - start_date
@@ -69,5 +69,5 @@ class HolidaySerializer(serializers.ModelSerializer):
 class LeaveManagementSerializer(serializers.ModelSerializer):
     employee = EmployeeSerializer()
     class Meta: 
-        model = Leave_Managment
-        fields = ['total_leaves','employee']
+        model = Leave_Management
+        fields = ['total_leaves']

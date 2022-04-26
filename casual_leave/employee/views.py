@@ -8,7 +8,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.decorators import api_view
 from employee.serializers import EmployeeSerializer, GetLeavesSerializer, HolidaySerializer, PostLeavesSerializer, LeaveManagementSerializer
-from employee.models import Holidays, Employee, Leaves,Leave_Managment
+from employee.models import Holidays, Employee, Leaves, Leave_Management
 from datetime import date, datetime, timedelta
 
 import json
@@ -82,6 +82,7 @@ def leave_apply(request):
         startdate = getDate(data['start_date'])
         delta = enddate - startdate
         count = delta.days + 1
+        total_leaves = 12
         invalid = False
         print("Count",count)
         def in1or3Week(date):
@@ -94,15 +95,17 @@ def leave_apply(request):
             sunday = (day.strftime('%w') == '0')
             if(sat1or3 or sunday):
                 count = count - 1
-
-        # loop sunday and 1st or 3rd sat
+                
         print(count)
+        # loop sunday and 1st or 3rd sat
+        remaining_leaves = total_leaves - count
+        print("Total leaves remaining", remaining_leaves)
         if(count == 0):
             err =   {"message": "0 days..."}
             return Response(err, status=status.HTTP_400_BAD_REQUEST)
         serializer = PostLeavesSerializer(data=data)
         if serializer.is_valid():
-            serializer.save(leave_days_count = count) # LeaveDaysCount=count
+            serializer.save(leave_days_count = count, total_leaves = remaining_leaves) # LeaveDaysCount=count
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -147,7 +150,7 @@ def holidays(request):
 def leave_management(request):
     
     if request.method == 'GET':
-        manage_leave = Leave_Managment.objects.all()
+        manage_leave = Leave_Management.objects.all()
         serializer = LeaveManagementSerializer(manage_leave , many =True)
         return Response(serializer.data)
         

@@ -25,13 +25,14 @@ class Leaves(models.Model):
     reason = models.TextField(max_length=500, blank=True, default='')
     approved = models.BooleanField(blank=True, null=True, default= None)
     leave_days_count = models.IntegerField()
+    total_leaves = models.IntegerField(default=12)
 
 class Holidays(models.Model):
     title = models.CharField(max_length=200,default='')
     description = models.TextField(max_length=250, default='')
     date = models.DateField(auto_now=False, auto_now_add=False, blank=True)
 
-class Leave_Managment(models.Model):
-    total_leaves = models.IntegerField()
+class Leave_Management(models.Model):
+    total_leaves = models.IntegerField(default=12)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
 
